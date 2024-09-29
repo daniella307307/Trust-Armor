@@ -1,0 +1,9 @@
+/* In your main CSS file or a relevant styles file */
+.container {
+    display: flex;               /* Use flexbox layout */
+    justify-content: flex-start; /* Align items to the left */
+    align-items: center;         /* Center items vertically */
+    width: 100%;                 /* Full width */
+    height: 100vh;              /* Full height of the viewport */
+  }
+  
