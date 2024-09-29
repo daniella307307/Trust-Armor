@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrustArmor Design</title>
+    <link rel="stylesheet" href="/views/css/trustarmor.css">
+    <script src="popup.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <button onclick="refreshPage()" style="background-color: white; color: black; font-size: 2em;">&#x21bb;</button>
+            <div class="logo">Trust<span class="accent">Armor</span></div>
+            <button class="btn-close" onclick="closeContainer()">
+                <i class="fa-solid fa-xmark" style="color: black;"></i>
+            </button>
+        </div>
+        <div class="logo-image">
+            <img src="ta_name.png" alt="Logo" style="max-width: 100%; height: auto;">
+        </div>
+        <div class="language-section">
+            <label for="language">Language*</label>
+            <div class="dropdown">
+                <select id="language" onchange="translateContent()">
+                    <option value="en">English</option>
+                    <option value="rw">Kinyarwanda</option>
+                    <option value="sw">Kiswahili</option>
+                </select>
+            </div>
+        </div>
+        <div class="url-section" id="content">
+            <label for="urlInput">Current URL:</label>
+            <input type="text" id="urlInput" placeholder="URL will be displayed here">
+        </div>
+        <button class="upgrade-btn" onclick="scanWebsite()" type="submit" id="content">Scan</button>
+
+        <div id="resultMessage" class="result-message"id="text-to-translate id="content"></div>
+        <a href="/views/upgradePlan.html" style="float: right; font-size: .7em; margin-top: 2em;">Upgrade Your Plan</a>
+    </div>
+    <script>
+        function refreshPage() {
+            location.reload();
+        }
+
+        function closeContainer() {
+            document.getElementsByClassName('container')[0].style.display = 'none';
+        }
+
+        function scanWebsite() {
+            const url = document.getElementById('urlInput').value; // Get the current URL
+            const resultMessage = document.getElementById('resultMessage');
+
+            if (!url) {
+                resultMessage.textContent = 'Please enter a valid URL';
+                resultMessage.style.color = 'red';
+                return;
+            }
+
+            fetch('http://157.173.127.178:5000/scan', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url: url })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    resultMessage.textContent = `Error: ${data.error}`;
+                    resultMessage.style.color = 'red';
+                } else if (data.message === "Malicious content detected!") {
+                    resultMessage.textContent = data.message;
+                    resultMessage.style.color = 'red';
+                } else {
+                    resultMessage.textContent = data.message;
+                    resultMessage.style.color = 'green';
+                }
+            })
+            .catch(error => {
+                resultMessage.textContent = 'An error occurred during the scan';
+                resultMessage.style.color = 'red';
+                console.error('Error:', error);
+            });
+        }
+        
+        function setCurrentTabUrl() {
+            chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                const currentTab = tabs[0];
+                if (currentTab) {
+                    document.getElementById('urlInput').value = currentTab.url; // Set the current URL
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', setCurrentTabUrl);
+    </script>
+</body>
+
+</html>

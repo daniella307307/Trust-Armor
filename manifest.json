@@ -1,0 +1,33 @@
+{
+  "manifest_version": 3,
+  "name": "TrustArmor",
+  "description": "Protect users from malicious URLs by analyzing links before loading.",
+  "version": "2.0",
+  "action": {
+    "default_popup": "trustarmor.html",
+    "default_icon": "ta_only_bg.png"
+  },
+  "permissions": [
+    "activeTab", 
+    "notifications", 
+    "tabs", 
+    "storage",
+    "webRequest",
+    "webRequestBlocking"
+  ],
+  "host_permissions": [
+    "https://*/*",
+    "http://*/*",
+    "http://157.173.127.178/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://127.0.0.1/*", "https://*/*", "http://*/*","http://157.173.127.178/*"],
+      "js": ["contentScript.js"],
+      "run_at": "document_start"
+    }
+  ]
+}
